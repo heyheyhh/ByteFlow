@@ -12,7 +12,7 @@ namespace ByteFlow.WebSockets
 {
     public abstract class Connection : IDisposable
     {
-        public string Tag { get; init; } = string.Empty;
+        public string Tag { get; set; } = string.Empty;
         
         /// <summary>
         /// 可用于保存运行过程中与此连接相关的数据，而不需要保存额外的（连接->数据）的映射关系
@@ -27,7 +27,9 @@ namespace ByteFlow.WebSockets
         {
             WebSocketState.Connecting => ConnectionState.Connecting,
             WebSocketState.Open => ConnectionState.Open,
-            WebSocketState.CloseSent or WebSocketState.CloseReceived or WebSocketState.Closed => ConnectionState.Closed,
+            WebSocketState.CloseSent => ConnectionState.Closed,
+            WebSocketState.CloseReceived=> ConnectionState.Closed,
+            WebSocketState.Closed => ConnectionState.Closed,
             _ => ConnectionState.None,
         };
 
@@ -35,6 +37,7 @@ namespace ByteFlow.WebSockets
 
         public string Id { get; set; } = Guid.NewGuid().ToString("N");
 
+        private readonly ValueTask CompletedValueTask = new ValueTask(Task.CompletedTask);
         internal WebSocket? InternalWebSocket { get; set; }
         private ConnectionMessageReceiver? _receiver;
         private bool _disposed;
@@ -149,14 +152,14 @@ namespace ByteFlow.WebSockets
         {
             if (this.State != ConnectionState.Open)
             {
-                return ValueTask.CompletedTask;
+                return CompletedValueTask;
             }
 
 #if DEBUG
             string bytesStr = string.Join(',', arr.ToArray());
             Console.WriteLine($"sending binary, length:{arr.Length} bytes:[{bytesStr}]");
 #endif
-            return InternalWebSocket?.SendAsync(arr, WebSocketMessageType.Binary, true, cancellationToken) ?? ValueTask.CompletedTask;
+            return InternalWebSocket?.SendAsync(arr, WebSocketMessageType.Binary, true, cancellationToken) ?? CompletedValueTask;
         }
 
         public Task SendAsync(string text, CancellationToken cancellationToken = default)

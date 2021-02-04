@@ -18,7 +18,7 @@ namespace ByteFlow.WebSockets
         public AsyncAction<ConnectionErrorEventArgs>? ErrorAsyncAction { get; set; }
         public AsyncAction<ConnectionClosedEventArgs>? ClosedByRemoteAsyncAction { get; set; }
         public AsyncAction<ConnectionMessage>? MessageAsyncAction { get; set; }
-        public string Tag { get; init; } = string.Empty;
+        public string Tag { get; set; } = string.Empty;
 
         public Encoding TextEncoding { get; }
 
@@ -95,7 +95,7 @@ namespace ByteFlow.WebSockets
             {
                 var args = new ConnectionErrorEventArgs(e.Message, e);
                 Debug.WriteLine($"Tag:{Tag}, Exp:{e.Message}");
-                if (this.ErrorAsyncAction is not null)
+                if (this.ErrorAsyncAction != null)
                 {
                     await this.ErrorAsyncAction(args);
                 }
@@ -116,7 +116,7 @@ namespace ByteFlow.WebSockets
                     }
 
                     if (!this._messagesChannel.Reader.TryRead(out var msg)) continue;
-                    if (this.MessageAsyncAction is not null)
+                    if (this.MessageAsyncAction != null)
                     {
                         await this.MessageAsyncAction(msg);
                     }
