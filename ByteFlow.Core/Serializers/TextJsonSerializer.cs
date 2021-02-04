@@ -9,14 +9,14 @@ namespace ByteFlow.Serializers
 
         public TextJsonSerializer()
         {
-            this.Options = new();
+            this.Options = new JsonSerializerOptions();
             SerializerFactory.ConfigureJsonSerializerOptions(Options);
         }
 
-        public TValue? Deserialize<TValue>(string json)
+        public TValue Deserialize<TValue>(string json)
             => JsonSerializer.Deserialize<TValue>(json, Options);
 
-        public TValue? Deserialize<TValue>(ReadOnlySpan<byte> utf8Json)
+        public TValue Deserialize<TValue>(ReadOnlySpan<byte> utf8Json)
             => JsonSerializer.Deserialize<TValue>(utf8Json, Options);
 
         public object? Deserialize(string json, Type returnType)

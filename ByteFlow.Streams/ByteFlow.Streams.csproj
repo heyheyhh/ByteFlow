@@ -3,6 +3,24 @@
     <PropertyGroup>
         <TargetFramework>net5.0</TargetFramework>
         <Nullable>enable</Nullable>
+        <Authors>heyheyhh</Authors>
+        <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+        <PackageLicenseFile>LICENSE</PackageLicenseFile>
+        <RepositoryUrl>https://github.com/heyheyhh/ByteFlow</RepositoryUrl>
+        <RepositoryType>Github</RepositoryType>
+        <PackageReleaseNotes>提供字节流的读取的写入。可灵活使用BigEndian和LittleEndian</PackageReleaseNotes>
+        <Version>1.0.1</Version>
+        <Description>提供字节流的读取的写入
+1. 支持BigEndian和LittleEndian
+2. 可配合WebSocket使用，以方便字节流的读取写入</Description>
+        <PackageProjectUrl>https://github.com/heyheyhh/ByteFlow</PackageProjectUrl>
     </PropertyGroup>
+
+    <ItemGroup>
+      <None Include="..\LICENSE">
+        <Pack>True</Pack>
+        <PackagePath></PackagePath>
+      </None>
+    </ItemGroup>
 
 </Project>

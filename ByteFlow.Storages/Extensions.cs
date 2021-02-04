@@ -29,7 +29,7 @@ namespace ByteFlow.Storages
                 var assemblies = mongoEntityAssemblies.Length <= 0 && entryAssm != null ? new[] { entryAssm } : mongoEntityAssemblies;
 
                 // 在程序集中找到所有有 <see cref="DocumentAttribute"/> 的类型
-                Dictionary<Type, DocumentAttribute> entityDocumentAttributes = new();
+                var entityDocumentAttributes = new Dictionary<Type, DocumentAttribute>();
                 foreach (var assembly in assemblies)
                 {
                     var types = assembly.ExportedTypes;

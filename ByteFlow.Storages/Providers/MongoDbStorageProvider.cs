@@ -66,7 +66,7 @@ namespace ByteFlow.Storages
             }
         }
 
-        public async Task<TRes?> UseTransactionAsync<TRes>(
+        public async Task<TRes> UseTransactionAsync<TRes>(
             Func<TransactionContext, CancellationToken, Task<TRes>> action,
             TransactionOptions? options = null,
             CancellationToken cancellationToken = default)
@@ -82,10 +82,12 @@ namespace ByteFlow.Storages
                 .WaitAndRetryAsync(MaxRetryTimes, retryAttempt => TimeSpan.FromMilliseconds(retryAttempt * RetryDuration));
             var res = await executePolicy.ExecuteAsync(ct => action(context, ct), cancellationToken);
 
-            if (!session.IsInTransaction) 
+            if (!session.IsInTransaction)
+#pragma warning disable CS8603 // 可能的 null 引用返回。
                 return default;
-            
-            // 提交事务
+#pragma warning restore CS8603 // 可能的 null 引用返回。
+
+                // 提交事务
             var commitPolicy = Policy.Handle<MongoException>(ex => ex.HasErrorLabel("UnknownTransactionCommitResult"))
                 .WaitAndRetryAsync(MaxRetryTimes, retryAttempt => TimeSpan.FromMilliseconds(retryAttempt * RetryDuration));
             await commitPolicy.ExecuteAsync(() => context.Session.CommitTransactionAsync(cancellationToken));

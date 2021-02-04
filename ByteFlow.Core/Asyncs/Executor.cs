@@ -47,7 +47,7 @@ namespace ByteFlow.Asyncs
         /// <param name="timeout">超时时间</param>
         /// <param name="cancellationToken">取消令牌</param>
         /// <returns>如果成功执行了任务，返回结果；否则（如超时），返回default</returns>
-        public static async Task<TResult?> RunAsync<TResult>(Func<TResult> func, TimeSpan timeout, CancellationToken cancellationToken = default)
+        public static async Task<TResult> RunAsync<TResult>(Func<TResult> func, TimeSpan timeout, CancellationToken cancellationToken = default)
         {
             using var tokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
             var mainTask = Task.Run(func, tokenSource.Token);
@@ -57,7 +57,9 @@ namespace ByteFlow.Asyncs
             if (firstCompleteTask == timeoutTask || firstCompleteTask.Id == timeoutTask.Id)
             {
                 // timeout
+#pragma warning disable CS8603 // 可能的 null 引用返回。
                 return default;
+#pragma warning restore CS8603 // 可能的 null 引用返回。
             }
 
             return mainTask.Result;
@@ -70,7 +72,7 @@ namespace ByteFlow.Asyncs
         /// <param name="timeout">超时时间</param>
         /// <param name="cancellationToken">取消令牌</param>
         /// <returns>如果成功执行了任务，返回结果；否则（如超时），返回default</returns>
-        public static async Task<TResult?> RunAsync<TResult>(AsyncFunc<CancellationToken,TResult> func, TimeSpan timeout, CancellationToken cancellationToken = default)
+        public static async Task<TResult> RunAsync<TResult>(AsyncFunc<CancellationToken,TResult> func, TimeSpan timeout, CancellationToken cancellationToken = default)
         {
             using var tokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
             var mainTask = func(tokenSource.Token);
@@ -80,7 +82,9 @@ namespace ByteFlow.Asyncs
             if (firstCompleteTask == timeoutTask || firstCompleteTask.Id == timeoutTask.Id)
             {
                 // timeout
+#pragma warning disable CS8603 // 可能的 null 引用返回。
                 return default;
+#pragma warning restore CS8603 // 可能的 null 引用返回。
             }
 
             return mainTask.Result;

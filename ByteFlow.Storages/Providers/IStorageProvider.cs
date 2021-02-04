@@ -31,7 +31,7 @@ namespace ByteFlow.Storages
         /// <param name="options">事务选项</param>
         /// <param name="cancellationToken">取消令牌</param>
         /// <returns>事务执行结果</returns>
-        Task<TRes?> UseTransactionAsync<TRes>(
+        Task<TRes> UseTransactionAsync<TRes>(
             Func<TransactionContext, CancellationToken, Task<TRes>> action,
             TransactionOptions? options = null,
             CancellationToken cancellationToken = default);

@@ -12,11 +12,11 @@ namespace ByteFlow.Serializers
 
         byte[] SerializeToBytes(object value, Type inputType);
 
-        TValue? Deserialize<TValue>(string json);
+        TValue Deserialize<TValue>(string json);
 
         object? Deserialize(string json, Type returnType);
 
-        TValue? Deserialize<TValue>(ReadOnlySpan<byte> utf8Json);
+        TValue Deserialize<TValue>(ReadOnlySpan<byte> utf8Json);
 
         object? Deserialize(ReadOnlySpan<byte> utf8Json, Type returnType);
     }

@@ -22,7 +22,7 @@ namespace ByteFlow.Caches
         private RedisOptions Options => _optionsMonitor.CurrentValue;
         private readonly IJsonSerializer _serializer;
 
-        private readonly ConcurrentDictionary<Type, CachedAttribute> _typeAttr = new();
+        private readonly ConcurrentDictionary<Type, CachedAttribute> _typeAttr = new ConcurrentDictionary<Type, CachedAttribute>();
 
         private ConnectionMultiplexer? _connectionMultiplexer;
         private readonly IOptionsMonitor<RedisOptions> _optionsMonitor;

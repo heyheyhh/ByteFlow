@@ -6,8 +6,8 @@ namespace ByteFlow.Storages
 #pragma warning disable CS8603 // 可能的 null 引用返回。
     public class CustomBsonSerializationProvider : IBsonSerializationProvider
     {
-        private readonly DateTimeOffsetSerializer _dateTimeOffsetSerializer = new();
-        private readonly TimeSpanSerializer _timeSpanSerializer = new();
+        private readonly DateTimeOffsetSerializer _dateTimeOffsetSerializer = new DateTimeOffsetSerializer();
+        private readonly TimeSpanSerializer _timeSpanSerializer = new TimeSpanSerializer();
         
         public IBsonSerializer GetSerializer(Type type)
         {

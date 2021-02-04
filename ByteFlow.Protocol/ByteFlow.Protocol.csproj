@@ -3,10 +3,26 @@
     <PropertyGroup>
         <TargetFramework>net5.0</TargetFramework>
         <Nullable>enable</Nullable>
+        <Authors>heyheyhh</Authors>
+        <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+        <PackageLicenseFile>LICENSE</PackageLicenseFile>
+        <PackageProjectUrl>https://github.com/heyheyhh/ByteFlow</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/heyheyhh/ByteFlow</RepositoryUrl>
+        <RepositoryType>Github</RepositoryType>
+        <Version>1.0.0</Version>
+        <PackageReleaseNotes>ByteProto协议的具体实现。此协议主要用于WebSocket连接中数据包的传输。</PackageReleaseNotes>
+        <Description>ByteProto协议的具体实现。此协议主要用于WebSocket连接中数据包的传输。</Description>
     </PropertyGroup>
 
     <ItemGroup>
       <ProjectReference Include="..\ByteFlow.Streams\ByteFlow.Streams.csproj" />
+    </ItemGroup>
+    
+    <ItemGroup>
+        <None Include="..\LICENSE">
+            <Pack>True</Pack>
+            <PackagePath></PackagePath>
+        </None>
     </ItemGroup>
 
 </Project>

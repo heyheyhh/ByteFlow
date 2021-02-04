@@ -1,8 +1,17 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net5.0</TargetFramework>
+        <TargetFramework>netcoreapp3.1</TargetFramework>
         <Nullable>enable</Nullable>
+        <Authors>heyheyhh</Authors>
+        <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+        <PackageLicenseFile>LICENSE</PackageLicenseFile>
+        <PackageProjectUrl>https://github.com/heyheyhh/ByteFlow</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/heyheyhh/ByteFlow</RepositoryUrl>
+        <RepositoryType>Github</RepositoryType>
+        <Version>1.0.0</Version>
+        <PackageReleaseNotes>此包主要扩展了Redis Hash以及String的实现，并且实现了Redis的健康检查</PackageReleaseNotes>
+        <Description>此包主要扩展了Redis Hash以及String的实现，并且实现了Redis的健康检查</Description>
     </PropertyGroup>
 
     <ItemGroup>
@@ -14,6 +23,13 @@
 
     <ItemGroup>
         <ProjectReference Include="..\ByteFlow.Core\ByteFlow.Core.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Include="..\LICENSE">
+            <Pack>True</Pack>
+            <PackagePath></PackagePath>
+        </None>
     </ItemGroup>
 
 </Project>

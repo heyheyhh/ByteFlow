@@ -7,7 +7,7 @@ namespace ByteFlow
 {
     public class ScheduleTaskManager
     {
-        private readonly ConcurrentDictionary<string, ScheduleTaskInfo> _scheduledTasks = new();
+        private readonly ConcurrentDictionary<string, ScheduleTaskInfo> _scheduledTasks = new ConcurrentDictionary<string, ScheduleTaskInfo>();
 
         /// <summary>
         /// 用于安排一个定时任务，比如定时发送心跳包等等。连接关闭时，子类无需停止任务，该工作由此父类完成
