@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net5.0</TargetFramework>
+      <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ByteFlowTestEntities\ByteFlowTestEntities.csproj" />
+    <ProjectReference Include="..\ByteFlow.Core\ByteFlow.Core.csproj" />
+    <ProjectReference Include="..\ByteFlow.Connection\ByteFlow.Connection.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net5.0</TargetFramework>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\ByteFlow.Core\ByteFlow.Core.csproj" />
+      <ProjectReference Include="..\ByteFlow.Protocol\ByteFlow.Protocol.csproj" />
+      <ProjectReference Include="..\ByteFlow.WebSockets\ByteFlow.WebSockets.csproj" />
+    </ItemGroup>
+
+</Project>
