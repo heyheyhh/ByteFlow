@@ -6,10 +6,12 @@
         <Authors>heyheyhh</Authors>
         <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
         <PackageLicenseFile>LICENSE</PackageLicenseFile>
+        <PackageProjectUrl>https://github.com/heyheyhh/ByteFlow</PackageProjectUrl>
         <RepositoryUrl>https://github.com/heyheyhh/ByteFlow</RepositoryUrl>
         <RepositoryType>Github</RepositoryType>
-        <PackageReleaseNotes>对.net core 底层WebSocket的封装</PackageReleaseNotes>
         <Version>1.0.1</Version>
+        <PackageReleaseNotes>对.net core 底层WebSocket的封装</PackageReleaseNotes>
+        <Description>对.net core 底层WebSocket的封装</Description>
     </PropertyGroup>
 
     <ItemGroup>

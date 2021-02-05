@@ -9,8 +9,8 @@
         <PackageProjectUrl>https://github.com/heyheyhh/ByteFlow</PackageProjectUrl>
         <RepositoryUrl>https://github.com/heyheyhh/ByteFlow</RepositoryUrl>
         <RepositoryType>Github</RepositoryType>
-        <Version>1.0.0</Version>
-        <PackageReleaseNotes>ByteProto协议的 WebSocket 实现，实现类为 ByteProtoConnection。该类包含了自动发送心跳包（也可以取消），默认不发送KeepAlive消息。</PackageReleaseNotes>
+        <Version>1.0.1</Version>
+        <PackageReleaseNotes>修复一些小问题</PackageReleaseNotes>
         <Description>ByteProto协议的 WebSocket 实现，实现类为 ByteProtoConnection。该类包含了自动发送心跳包（也可以取消），默认不发送KeepAlive消息。</Description>
     </PropertyGroup>
 
