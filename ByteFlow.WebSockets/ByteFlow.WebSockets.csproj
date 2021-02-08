@@ -11,7 +11,7 @@
         <RepositoryType>Github</RepositoryType>
         <Version>1.0.1</Version>
         <PackageReleaseNotes>对.net core 底层WebSocket的封装</PackageReleaseNotes>
-        <Description>对.net core 底层WebSocket的封装</Description>
+        <Description>对.net core 底层WebSocket的封装。具体使用方法，请移步Github源代码查看</Description>
     </PropertyGroup>
 
     <ItemGroup>

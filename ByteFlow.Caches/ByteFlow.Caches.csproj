@@ -11,7 +11,7 @@
         <RepositoryType>Github</RepositoryType>
         <Version>1.0.0</Version>
         <PackageReleaseNotes>此包主要扩展了Redis Hash以及String的实现，并且实现了Redis的健康检查</PackageReleaseNotes>
-        <Description>此包主要扩展了Redis Hash以及String的实现，并且实现了Redis的健康检查</Description>
+        <Description>此包主要扩展了Redis Hash以及String的实现，并且实现了Redis的健康检查。具体使用方法，请移步Github源代码查看</Description>
     </PropertyGroup>
 
     <ItemGroup>

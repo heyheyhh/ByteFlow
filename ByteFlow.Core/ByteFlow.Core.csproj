@@ -9,9 +9,9 @@
         <PackageProjectUrl>https://github.com/heyheyhh/ByteFlow</PackageProjectUrl>
         <RepositoryUrl>https://github.com/heyheyhh/ByteFlow</RepositoryUrl>
         <RepositoryType>Github</RepositoryType>
-        <Version>1.0.1</Version>
-        <PackageReleaseNotes>修复ScheduleTaskManager的一些问题</PackageReleaseNotes>
-        <Description>ByteFlow一些基础功能，包括AsyncAction，AsyncFunc，TaskTimer，Executor；Exception，Serializers，ScheduleTaskManager，以及一些扩展</Description>
+        <Version>1.0.2</Version>
+        <PackageReleaseNotes>Executor 类增加 WaitUtilAsync 方法</PackageReleaseNotes>
+        <Description>ByteFlow一些基础功能，包括AsyncAction，AsyncFunc，TaskTimer，Executor；Exception，Serializers，ScheduleTaskManager，以及一些扩展。具体使用方法，请移步Github源代码查看</Description>
     </PropertyGroup>
 
     <ItemGroup>

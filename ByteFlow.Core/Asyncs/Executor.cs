@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ByteFlow.Extensions;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -72,7 +73,7 @@ namespace ByteFlow.Asyncs
         /// <param name="timeout">超时时间</param>
         /// <param name="cancellationToken">取消令牌</param>
         /// <returns>如果成功执行了任务，返回结果；否则（如超时），返回default</returns>
-        public static async Task<TResult> RunAsync<TResult>(AsyncFunc<CancellationToken,TResult> func, TimeSpan timeout, CancellationToken cancellationToken = default)
+        public static async Task<TResult> RunAsync<TResult>(AsyncFunc<CancellationToken, TResult> func, TimeSpan timeout, CancellationToken cancellationToken = default)
         {
             using var tokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
             var mainTask = func(tokenSource.Token);
@@ -154,5 +155,39 @@ namespace ByteFlow.Asyncs
         /// <returns>结果</returns>
         public static Task<TResult> RunLongTimeAsync<TResult>(Func<TResult> func, CancellationToken cancellationToken)
             => Task.Factory.StartNew(func, cancellationToken, TaskCreationOptions.LongRunning, TaskScheduler.Default);
+
+        /// <summary>
+        /// 等待某个条件满足再继续执行
+        /// </summary>
+        /// <remarks>
+        /// 注意：
+        /// 此方法在周期性的调用 <paramref name="checkFunc"/> 时，不会处理 <paramref name="checkFunc"/> 可能抛出的异常
+        /// </remarks>
+        /// <param name="checkFunc">用于检查指定条件是否满足</param>
+        /// <param name="checkDuration">执行<paramref name="checkFunc"/>的时间间隔</param>
+        /// <param name="timeout">当前等待的超时时间</param>
+        /// <param name="cancellationToken">取消令牌</param>
+        /// <exception cref="TimeoutException">当等待时间超过指定的<paramref name="timeout"/>时间时</exception>
+        public static async Task WaitUtilAsync(AsyncFunc<bool> checkFunc, TimeSpan checkDuration, TimeSpan timeout, CancellationToken cancellationToken)
+        {
+            using var tokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+            var token = tokenSource.Token;
+            var workTask = RunLongTimeAsync(async () =>
+            {
+                var checkRes = false;
+                while (!token.IsCancellationRequested && !checkRes)
+                {
+                    await Task.Delay(checkDuration);
+                    checkRes = await checkFunc();
+                }
+            }, token);
+            var timeoutTask = Task.Delay(timeout, token);
+            Task firstCompleteTask = await Task.WhenAny(workTask, timeoutTask);
+            tokenSource.Cancel();
+            if (firstCompleteTask == timeoutTask || firstCompleteTask.Id == timeoutTask.Id)
+            {
+                throw new TimeoutException($"Time exceed {timeout.ToHHMMSS()}");
+            }
+        }
     }
 }

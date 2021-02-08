@@ -61,14 +61,15 @@ namespace ByteFlow.Asyncs
         {
             this.Stop();
             this._tokenSource = new CancellationTokenSource();
+            var token = this._tokenSource.Token;
 
             Executor.RunLongTimeAsync(async () =>
             {
                 _startTime = DateTimeOffset.Now;
-                while (CanKeepRun())
+                while (!token.IsCancellationRequested)
                 {
                     await Task.Delay(this._interval);
-                    if (!CanKeepRun())
+                    if (token.IsCancellationRequested)
                     {
                         break;
                     }
@@ -83,9 +84,7 @@ namespace ByteFlow.Asyncs
                         Debug.WriteLine(e);
                     }
                 }
-            }, this._tokenSource.Token);
-
-            bool CanKeepRun() => this._tokenSource != null && !this._tokenSource.IsCancellationRequested;
+            }, token);
         }
     }
 }

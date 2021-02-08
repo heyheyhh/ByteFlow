@@ -11,7 +11,7 @@
         <RepositoryType>Github</RepositoryType>
         <Version>1.0.0</Version>
         <PackageReleaseNotes>此包主要包含一些针对MongoDB的一些扩展，以便更加灵活的对MongoDB中的数据进行操作，在接口 IStorageProvider 中声明了已经实现的功能。同时，此包也实现了MongoDB的健康检查，具体可查看Github源码</PackageReleaseNotes>
-        <Description>此包主要包含一些针对MongoDB的一些扩展，以便更加灵活的对MongoDB中的数据进行操作，在接口 IStorageProvider 中声明了已经实现的功能。同时，此包也实现了MongoDB的健康检查，具体可查看Github源码</Description>
+        <Description>此包主要包含一些针对MongoDB的一些扩展，以便更加灵活的对MongoDB中的数据进行操作，在接口 IStorageProvider 中声明了已经实现的功能。同时，此包也实现了MongoDB的健康检查。具体使用方法，请移步Github源代码查看</Description>
     </PropertyGroup>
 
     <ItemGroup>
