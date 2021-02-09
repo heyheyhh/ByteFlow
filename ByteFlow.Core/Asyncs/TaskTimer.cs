@@ -2,6 +2,8 @@
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
+using ByteFlow.Extensions;
+using ByteFlow.Helpers;
 
 namespace ByteFlow.Asyncs
 {
@@ -11,6 +13,8 @@ namespace ByteFlow.Asyncs
     public class TaskTimer
     {
         public event Action<TimeSpan>? Tick;
+
+        public event AsyncAction<TimeSpan, CancellationToken>? TickAsync;
 
         private DateTimeOffset _startTime;
         private CancellationTokenSource? _tokenSource;
@@ -37,47 +41,37 @@ namespace ByteFlow.Asyncs
         public void Stop()
         {
             _startTime = DateTimeOffset.Now;
-            if (this._tokenSource == null)
-            {
-                return;
-            }
-
-            try
-            {
-                this._tokenSource.Cancel(false);
-                this._tokenSource.Dispose();
-            }
-            catch (Exception e)
-            {
-                Debug.WriteLine(e);
-            }
-            finally
-            {
-                this._tokenSource = null;
-            }
+            TokenSourceHelper.Dispose(ref _tokenSource);
         }
 
         private void RunInternal()
         {
             this.Stop();
-            this._tokenSource = new CancellationTokenSource();
-            var token = this._tokenSource.Token;
+            
+            TokenSourceHelper.Create(ref _tokenSource, out var token);
 
             Executor.RunLongTimeAsync(async () =>
             {
                 _startTime = DateTimeOffset.Now;
                 while (!token.IsCancellationRequested)
                 {
-                    await Task.Delay(this._interval);
-                    if (token.IsCancellationRequested)
-                    {
-                        break;
-                    }
-
                     try
                     {
+                        await Task.Delay(this._interval, token);
+                        if (token.IsCancellationRequested)
+                        {
+                            break;
+                        }
+
                         var duration = DateTimeOffset.Now - _startTime;
-                        this.Tick?.Invoke(duration);
+                        if (TickAsync != null)
+                        {
+                            TickAsync(duration, token).Ignore();
+                        }
+                        else
+                        {
+                            this.Tick?.Invoke(duration);
+                        }
                     }
                     catch (Exception e)
                     {

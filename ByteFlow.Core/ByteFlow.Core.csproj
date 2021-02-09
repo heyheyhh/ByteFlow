@@ -9,8 +9,8 @@
         <PackageProjectUrl>https://github.com/heyheyhh/ByteFlow</PackageProjectUrl>
         <RepositoryUrl>https://github.com/heyheyhh/ByteFlow</RepositoryUrl>
         <RepositoryType>Github</RepositoryType>
-        <Version>1.0.2</Version>
-        <PackageReleaseNotes>Executor 类增加 WaitUtilAsync 方法</PackageReleaseNotes>
+        <Version>1.0.3</Version>
+        <PackageReleaseNotes>修复 TaskTimer 的bug，新增 TokenSourceHelper 类，用于更方便的管理 CancellationTokenSource</PackageReleaseNotes>
         <Description>ByteFlow一些基础功能，包括AsyncAction，AsyncFunc，TaskTimer，Executor；Exception，Serializers，ScheduleTaskManager，以及一些扩展。具体使用方法，请移步Github源代码查看</Description>
     </PropertyGroup>
 

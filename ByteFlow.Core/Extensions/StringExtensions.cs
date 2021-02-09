@@ -1,4 +1,4 @@
-﻿namespace ByteFlow.Core.Extensions
+﻿namespace ByteFlow.Extensions
 {
     public static class StringExtensions
     {

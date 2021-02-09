@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace ByteFlow.Core.Extensions
+namespace ByteFlow.Extensions
 {
     public static class CollectionExtensions
     {

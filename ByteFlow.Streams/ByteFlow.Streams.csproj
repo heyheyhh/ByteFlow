@@ -8,8 +8,8 @@
         <PackageLicenseFile>LICENSE</PackageLicenseFile>
         <RepositoryUrl>https://github.com/heyheyhh/ByteFlow</RepositoryUrl>
         <RepositoryType>Github</RepositoryType>
-        <PackageReleaseNotes>提供字节流的读取的写入。可灵活使用BigEndian和LittleEndian</PackageReleaseNotes>
-        <Version>1.0.1</Version>
+        <PackageReleaseNotes>统一版本号</PackageReleaseNotes>
+        <Version>1.0.3</Version>
         <Description>
             提供字节流的读取的写入
             1. 支持BigEndian和LittleEndian

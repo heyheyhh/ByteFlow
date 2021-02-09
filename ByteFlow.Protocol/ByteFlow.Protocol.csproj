@@ -9,8 +9,8 @@
         <PackageProjectUrl>https://github.com/heyheyhh/ByteFlow</PackageProjectUrl>
         <RepositoryUrl>https://github.com/heyheyhh/ByteFlow</RepositoryUrl>
         <RepositoryType>Github</RepositoryType>
-        <Version>1.0.0</Version>
-        <PackageReleaseNotes>ByteProto协议的具体实现。此协议主要用于WebSocket连接中数据包的传输。</PackageReleaseNotes>
+        <Version>1.0.3</Version>
+        <PackageReleaseNotes>统一版本号</PackageReleaseNotes>
         <Description>ByteProto协议的具体实现。此协议主要用于WebSocket连接中数据包的传输。具体使用方法，请移步Github源代码查看</Description>
     </PropertyGroup>
 
