@@ -168,7 +168,7 @@ namespace ByteFlow.Asyncs
         /// <param name="timeout">当前等待的超时时间</param>
         /// <param name="cancellationToken">取消令牌</param>
         /// <exception cref="TimeoutException">当等待时间超过指定的<paramref name="timeout"/>时间时</exception>
-        public static async Task WaitUtilAsync(AsyncFunc<bool> checkFunc, TimeSpan checkDuration, TimeSpan timeout, CancellationToken cancellationToken)
+        public static async Task WaitUntilAsync(AsyncFunc<bool> checkFunc, TimeSpan checkDuration, TimeSpan timeout, CancellationToken cancellationToken)
         {
             using var tokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
             var token = tokenSource.Token;
