@@ -177,7 +177,7 @@ namespace ByteFlow.Asyncs
                 var checkRes = false;
                 while (!token.IsCancellationRequested && !checkRes)
                 {
-                    await Task.Delay(checkDuration);
+                    await Task.Delay(checkDuration, cancellationToken);
                     checkRes = await checkFunc();
                 }
             }, token);

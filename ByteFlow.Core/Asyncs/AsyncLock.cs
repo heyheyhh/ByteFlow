@@ -1,83 +1,55 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace ByteFlow.Asyncs
 {
-    internal class AsyncSemaphore
-    {
-        private static readonly Task SCompleted = Task.FromResult(true);
-        private readonly Queue<TaskCompletionSource<bool>> _mWaiters = new Queue<TaskCompletionSource<bool>>();
-        private int _mCurrentCount;
-
-        public AsyncSemaphore(int initialCount)
-        {
-            if (initialCount < 0) throw new ArgumentOutOfRangeException(nameof(initialCount));
-            _mCurrentCount = initialCount;
-        }
-
-        public Task WaitAsync()
-        {
-            lock (_mWaiters)
-            {
-                if (_mCurrentCount > 0)
-                {
-                    --_mCurrentCount;
-                    return SCompleted;
-                }
-                else
-                {
-                    var waiter = new TaskCompletionSource<bool>();
-                    _mWaiters.Enqueue(waiter);
-                    return waiter.Task;
-                }
-            }
-        }
-
-        public void Release()
-        {
-            TaskCompletionSource<bool>? toRelease = null;
-            lock (_mWaiters)
-            {
-                if (_mWaiters.Count > 0)
-                    toRelease = _mWaiters.Dequeue();
-                else
-                    ++_mCurrentCount;
-            }
-
-            toRelease?.SetResult(true);
-        }
-    }
-
     public class AsyncLock
     {
-        private readonly AsyncSemaphore _mSemaphore;
-        private readonly Task<Releaser> _mReleaser;
+        private readonly SemaphoreSlim semaphore;
 
         public AsyncLock()
         {
-            _mSemaphore = new AsyncSemaphore(1);
-            _mReleaser = Task.FromResult(new Releaser(this));
+            semaphore = new SemaphoreSlim(1);
         }
 
-        public Task<Releaser> LockAsync()
+        public Task<IDisposable> LockAsync(CancellationToken cancellationToken)
         {
-            var wait = _mSemaphore.WaitAsync();
-            return wait.IsCompleted ? 
-                _mReleaser :
-                wait.ContinueWith((_, state) => new Releaser((state as AsyncLock)!),this, CancellationToken.None,TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default);
+            var wait = semaphore.WaitAsync(cancellationToken);
+            if (wait.IsCompleted)
+            {
+                return Task.FromResult((IDisposable)new LockReleaser(this));
+            }
+            
+            return wait.ContinueWith(
+                    _ => (IDisposable)new LockReleaser(this),
+                    cancellationToken,
+                    TaskContinuationOptions.ExecuteSynchronously,
+                    TaskScheduler.Default);
         }
 
-        public readonly struct Releaser : IDisposable
+        private class LockReleaser : IDisposable
         {
-            private readonly AsyncLock _mToRelease;
+            private AsyncLock? target;
 
-            internal Releaser(AsyncLock toRelease) { _mToRelease = toRelease; }
+            internal LockReleaser(AsyncLock target)
+            {
+                this.target = target;
+            }
 
             public void Dispose()
             {
-                _mToRelease._mSemaphore.Release();
+                if (target == null)
+                    return;
+
+                // first null it, next Release, so even if Release throws, we don't hold the reference any more.
+                AsyncLock tmp = target;
+                target = null;
+                try
+                {
+                    tmp.semaphore.Release();
+                }
+                catch (Exception) { } // just ignore the Exception
             }
         }
     }
