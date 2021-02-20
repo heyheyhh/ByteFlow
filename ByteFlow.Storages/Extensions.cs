@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using MongoDB.Bson.Serialization;
+using MongoDB.Driver;
 
 namespace ByteFlow.Storages
 {
@@ -64,5 +65,18 @@ namespace ByteFlow.Storages
         /// <param name="builder">健康检查程序集合</param>
         public static IHealthChecksBuilder AddStorageProviderHealthCheck(this IHealthChecksBuilder builder)
             => builder.AddCheck<StorageProviderHealthCheck>("StorageProvider");
+
+        public static bool IsDuplicateKey(this MongoException ex)
+        {
+            if (ex is MongoCommandException c && c.Code == 11000)
+            {
+                return true;
+            }
+            if (ex is MongoWriteException w && w.WriteError.Category == ServerErrorCategory.DuplicateKey)
+            {
+                return true;
+            }
+            return false;
+        }
     }
 }
