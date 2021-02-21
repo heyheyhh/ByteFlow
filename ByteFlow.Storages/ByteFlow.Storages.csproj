@@ -9,8 +9,10 @@
         <PackageProjectUrl>https://github.com/heyheyhh/ByteFlow</PackageProjectUrl>
         <RepositoryUrl>https://github.com/heyheyhh/ByteFlow</RepositoryUrl>
         <RepositoryType>Github</RepositoryType>
-        <Version>1.0.3</Version>
-        <PackageReleaseNotes>统一版本号</PackageReleaseNotes>
+        <Version>1.0.4</Version>
+        <PackageReleaseNotes>
+            无
+        </PackageReleaseNotes>
         <Description>此包主要包含一些针对MongoDB的一些扩展，以便更加灵活的对MongoDB中的数据进行操作，在接口 IStorageProvider 中声明了已经实现的功能。同时，此包也实现了MongoDB的健康检查。具体使用方法，请移步Github源代码查看</Description>
     </PropertyGroup>
 

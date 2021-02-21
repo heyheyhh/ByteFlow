@@ -20,6 +20,7 @@ namespace ByteFlow.Serializers
             options.IgnoreNullValues = true;
             options.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
             options.Converters.Add(new TimeSpanConverter());
+            options.Converters.Add(new DateTimeOffsetConverter());
             JsonSerializerOptionsConfigurator?.Invoke(options);
         }
     }

@@ -40,12 +40,13 @@ namespace ByteFlowTest
                 options.AddSubProtocol("byte_proto");
                 options.SetRequestHeader("Authorization", "sid 7903702207692800");
             });
+            _client.IgnoreUrlsConnectiveTest = true;
             _client.Opened += Client_Ready;
             _client.PacketReceived += Client_PacketReceived;
             _client.Closed += OnClientClosed;
             _client.Error += OnClientError;
             
-            await _client.ConnectAsync(new string[] { "ws://127.0.0.1:5050" }, CancellationToken.None, true);
+            await _client.ConnectAsync(new string[] { "ws://127.0.0.1:5050" }, CancellationToken.None);
 
             await Task.Delay(5000);
             while (_client.IsStillAlive)

@@ -10,10 +10,13 @@ using System.Threading.Tasks;
 
 namespace ByteFlow.WebSockets
 {
+    /// <summary>
+    /// 如果要创建连接，应该使用<see cref="ConnectionFactory"/> 中提供的方法
+    /// </summary>
     public abstract class Connection : IDisposable
     {
         public string Tag { get; set; } = string.Empty;
-        
+
         /// <summary>
         /// 可用于保存运行过程中与此连接相关的数据，而不需要保存额外的（连接->数据）的映射关系
         /// </summary>
@@ -21,19 +24,24 @@ namespace ByteFlow.WebSockets
 
         public Encoding TextEncoding { get; set; } = Encoding.UTF8;
 
-        public string? SubProtocol => this.InternalWebSocket?.SubProtocol;
+        public string? SubProtocol => InternalWebSocket?.SubProtocol;
 
-        public ConnectionState State => this.InternalWebSocket == null ? ConnectionState.None : this.InternalWebSocket.State switch
+        public ConnectionState State => InternalWebSocket == null ? ConnectionState.None : InternalWebSocket.State switch
         {
             WebSocketState.Connecting => ConnectionState.Connecting,
             WebSocketState.Open => ConnectionState.Open,
             WebSocketState.CloseSent => ConnectionState.Closed,
-            WebSocketState.CloseReceived=> ConnectionState.Closed,
+            WebSocketState.CloseReceived => ConnectionState.Closed,
             WebSocketState.Closed => ConnectionState.Closed,
             _ => ConnectionState.None,
         };
 
-        public bool IsClientConnection => this.InternalWebSocket is ClientWebSocket;
+        public bool IsClientConnection => InternalWebSocket is ClientWebSocket;
+
+        /// <summary>
+        /// 是否忽略<see cref="ConnectAsync(IEnumerable{string}, CancellationToken)"/>中指定Url的可连接性测试，如果为true，则会选择指定的urls地址的第一个进行连接
+        /// </summary>
+        public bool IgnoreUrlsConnectiveTest { get; set; } = false;
 
         public string Id { get; set; } = Guid.NewGuid().ToString("N");
 
@@ -65,7 +73,7 @@ namespace ByteFlow.WebSockets
             }
 
             // 释放非托管资源，设置对象为null
-            await this.CloseAsync();
+            await CloseAsync();
 
             _disposed = true;
         }
@@ -75,8 +83,7 @@ namespace ByteFlow.WebSockets
         /// </summary>
         /// <param name="urls">待连接的地址</param>
         /// <param name="cancellationToken">取消令牌</param>
-        /// <param name="ignoreUrlTest">是否忽略Url连接性测试，如果为true，则会选择指定的urls地址的第一个进行连接</param>
-        public async Task ConnectAsync(IEnumerable<string> urls, CancellationToken cancellationToken, bool ignoreUrlTest = false)
+        public async Task ConnectAsync(IEnumerable<string> urls, CancellationToken cancellationToken)
         {
             if (!IsClientConnection)
             {
@@ -88,10 +95,10 @@ namespace ByteFlow.WebSockets
             }
 
             var url = urls.FirstOrDefault() ?? string.Empty;
-            if (!ignoreUrlTest)
+            if (!IgnoreUrlsConnectiveTest)
             {
                 // 如果不忽略 Url 连接性测试，则需要测试可连接性
-                url = await ConnectionUtils.UrlsConnectiveTest(urls, cancellationToken);
+                url = await ConnectionUtils.UrlsConnectiveTestAsync(urls, TimeSpan.FromSeconds(2), TimeSpan.FromMilliseconds(500), cancellationToken);
             }
 
             if (string.IsNullOrWhiteSpace(url))
@@ -99,11 +106,11 @@ namespace ByteFlow.WebSockets
                 throw new InvalidOperationException("未找到合适的连接地址");
             }
 
-            var clientWs = (this.InternalWebSocket as ClientWebSocket)!;
+            var clientWs = (InternalWebSocket as ClientWebSocket)!;
             await clientWs.ConnectAsync(new Uri(url), cancellationToken);
 
-            await this.StartReceiverAsync();
-            await this.OnOpenedAsync();
+            await StartReceiverAsync();
+            await OnOpenedAsync();
         }
 
         /// <summary>
@@ -111,14 +118,14 @@ namespace ByteFlow.WebSockets
         /// </summary>
         public Task StartServeAsync()
         {
-            if (this.IsClientConnection)
+            if (IsClientConnection)
             {
                 throw new InvalidOperationException($"Cannot invoke {nameof(StartServeAsync)} on client connection.");
             }
-            return this.StartReceiverAsync();
+            return StartReceiverAsync();
         }
 
-        public Task CloseAsync() => this.CloseAsync(WebSocketCloseStatus.NormalClosure, "Normal Close", CancellationToken.None);
+        public Task CloseAsync() => CloseAsync(WebSocketCloseStatus.NormalClosure, "Normal Close", CancellationToken.None);
 
         public async Task CloseAsync(WebSocketCloseStatus closeStatus, string? desc, CancellationToken cancellationToken)
         {
@@ -128,16 +135,16 @@ namespace ByteFlow.WebSockets
             }
             _closed = true;
             // 停止接收消息
-            this.StopReceiver();
+            StopReceiver();
             // 关闭底层 WebSocket
-            await this.CloseInternalWebSocketAsync(closeStatus, desc, cancellationToken);
+            await CloseInternalWebSocketAsync(closeStatus, desc, cancellationToken);
             // 执行其他关闭逻辑
-            await this.OnClosingAsync();
+            await OnClosingAsync();
         }
 
         public Task SendAsync(ArraySegment<byte> arr, CancellationToken cancellationToken = default)
         {
-            if (this.State != ConnectionState.Open)
+            if (State != ConnectionState.Open)
             {
                 return Task.CompletedTask;
             }
@@ -145,12 +152,12 @@ namespace ByteFlow.WebSockets
             string bytesStr = string.Join(',', arr.Array ?? Array.Empty<byte>());
             Console.WriteLine($"sending binary, length:{arr.Count} bytes:[{bytesStr}]");
 #endif
-            return this.InternalWebSocket != null ? this.InternalWebSocket.SendAsync(arr, WebSocketMessageType.Binary, true, cancellationToken) : Task.CompletedTask;
+            return InternalWebSocket != null ? InternalWebSocket.SendAsync(arr, WebSocketMessageType.Binary, true, cancellationToken) : Task.CompletedTask;
         }
 
         public ValueTask SendAsync(ReadOnlyMemory<byte> arr, CancellationToken cancellationToken = default)
         {
-            if (this.State != ConnectionState.Open)
+            if (State != ConnectionState.Open)
             {
                 return CompletedValueTask;
             }
@@ -164,7 +171,7 @@ namespace ByteFlow.WebSockets
 
         public Task SendAsync(string text, CancellationToken cancellationToken = default)
         {
-            if (this.State != ConnectionState.Open)
+            if (State != ConnectionState.Open)
             {
                 return Task.CompletedTask;
             }
@@ -172,8 +179,8 @@ namespace ByteFlow.WebSockets
 #if DEBUG
             Console.WriteLine($"sending text, length:{text.Length} content:{text}");
 #endif
-            var txtBytes = this.TextEncoding.GetBytes(text);
-            return this.InternalWebSocket != null ? this.InternalWebSocket.SendAsync(new ArraySegment<byte>(txtBytes), WebSocketMessageType.Text, true, cancellationToken) : Task.CompletedTask;
+            var txtBytes = TextEncoding.GetBytes(text);
+            return InternalWebSocket != null ? InternalWebSocket.SendAsync(new ArraySegment<byte>(txtBytes), WebSocketMessageType.Text, true, cancellationToken) : Task.CompletedTask;
         }
 
         /// <summary>
@@ -195,28 +202,28 @@ namespace ByteFlow.WebSockets
 
         private async Task StartReceiverAsync()
         {
-            this.StopReceiver();
+            StopReceiver();
             if (InternalWebSocket == null)
             {
                 throw new InvalidOperationException($"The internal websocket seemly has disposed.");
             }
 
-            this._receiver = new ConnectionMessageReceiver(InternalWebSocket, TextEncoding)
+            _receiver = new ConnectionMessageReceiver(InternalWebSocket, TextEncoding)
             {
-                Tag = this.Tag,
+                Tag = Tag,
                 ErrorAsyncAction = OnEventErrorAsync,
-                ClosedByRemoteAsyncAction = this.OnEventClosedAsync,
+                ClosedByRemoteAsyncAction = OnEventClosedAsync,
                 MessageAsyncAction = OnEventMessageAsync,
             };
 
             // 开始接受数据
-            await this._receiver.Start();
+            await _receiver.Start();
         }
 
         private void StopReceiver()
         {
-            this._receiver?.Stop();
-            this._receiver = null;
+            _receiver?.Stop();
+            _receiver = null;
         }
 
         private async Task CloseInternalWebSocketAsync(WebSocketCloseStatus closeStatus, string? desc, CancellationToken cancellationToken)
@@ -227,11 +234,11 @@ namespace ByteFlow.WebSockets
             }
             try
             {
-                if (this.State == ConnectionState.Closed || this.InternalWebSocket.State == WebSocketState.Aborted)
+                if (State == ConnectionState.Closed || InternalWebSocket.State == WebSocketState.Aborted)
                 {
                     return;
                 }
-                await this.InternalWebSocket.CloseAsync(closeStatus, desc, cancellationToken);
+                await InternalWebSocket.CloseAsync(closeStatus, desc, cancellationToken);
             }
             catch (Exception e)
             {

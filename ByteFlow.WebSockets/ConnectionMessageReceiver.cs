@@ -22,7 +22,7 @@ namespace ByteFlow.WebSockets
 
         public Encoding TextEncoding { get; }
 
-        public bool IsClientWebSocket => this._socket is ClientWebSocket;
+        public bool IsClientWebSocket => _socket is ClientWebSocket;
 
         private readonly Channel<ConnectionMessage> _messagesChannel = Channel.CreateUnbounded<ConnectionMessage>(new UnboundedChannelOptions
         {
@@ -35,31 +35,31 @@ namespace ByteFlow.WebSockets
 
         internal ConnectionMessageReceiver(WebSocket socket, Encoding? textEncoding = null)
         {
-            this._socket = socket;
-            this.TextEncoding = textEncoding ?? Encoding.UTF8;
+            _socket = socket;
+            TextEncoding = textEncoding ?? Encoding.UTF8;
         }
 
         public async Task Start()
         {
-            this.StartConsumer();
-            await this.StartReceiver();
+            StartConsumer();
+            await StartReceiver();
         }
 
         public void Stop()
         {
-            this.StopReceiver();
-            this.StopConsumer();
+            StopReceiver();
+            StopConsumer();
         }
 
         private async Task StartReceiver()
         {
-            this.StopReceiver();
-            this._msgReceiveTokenSource = new CancellationTokenSource();
+            StopReceiver();
+            _msgReceiveTokenSource = new CancellationTokenSource();
 
-            if (this.IsClientWebSocket)
+            if (IsClientWebSocket)
             {
                 // 在客户端，不能阻塞当前线程，否则无法进行其他业务逻辑的处理
-                await Task.Factory.StartNew(OnReceiveCore, this._msgReceiveTokenSource.Token, TaskCreationOptions.LongRunning, TaskScheduler.Default);
+                await Task.Factory.StartNew(OnReceiveCore, _msgReceiveTokenSource.Token, TaskCreationOptions.LongRunning, TaskScheduler.Default);
             }
             else
             {
@@ -70,14 +70,14 @@ namespace ByteFlow.WebSockets
 
         private async Task OnReceiveCore()
         {
-            if (this._msgReceiveTokenSource == null)
+            if (_msgReceiveTokenSource == null)
             {
                 return;
             }
             try
             {
-                var token = this._msgReceiveTokenSource.Token;
-                var socket = this._socket;
+                var token = _msgReceiveTokenSource.Token;
+                var socket = _socket;
 
                 while (socket.State == WebSocketState.Open && !token.IsCancellationRequested)
                 {
@@ -95,46 +95,46 @@ namespace ByteFlow.WebSockets
             {
                 var args = new ConnectionErrorEventArgs(e.Message, e);
                 Debug.WriteLine($"Tag:{Tag}, Exp:{e.Message}");
-                if (this.ErrorAsyncAction != null)
+                if (ErrorAsyncAction != null)
                 {
-                    await this.ErrorAsyncAction(args);
+                    await ErrorAsyncAction(args);
                 }
             }
         }
 
         private void StartConsumer()
         {
-            this.StopConsumer();
-            this._msgConsumeTokenSource = new CancellationTokenSource();
+            StopConsumer();
+            _msgConsumeTokenSource = new CancellationTokenSource();
             Task.Factory.StartNew(async () =>
             {
-                while (await this._messagesChannel.Reader.WaitToReadAsync())
+                while (await _messagesChannel.Reader.WaitToReadAsync())
                 {
-                    if (this._msgConsumeTokenSource == null || this._msgConsumeTokenSource.IsCancellationRequested)
+                    if (_msgConsumeTokenSource == null || _msgConsumeTokenSource.IsCancellationRequested)
                     {
                         break;
                     }
 
-                    if (!this._messagesChannel.Reader.TryRead(out var msg)) continue;
-                    if (this.MessageAsyncAction != null)
+                    if (!_messagesChannel.Reader.TryRead(out var msg)) continue;
+                    if (MessageAsyncAction != null)
                     {
-                        await this.MessageAsyncAction(msg);
+                        await MessageAsyncAction(msg);
                     }
                 }
-            }, this._msgConsumeTokenSource.Token, TaskCreationOptions.LongRunning, TaskScheduler.Default);
+            }, _msgConsumeTokenSource.Token, TaskCreationOptions.LongRunning, TaskScheduler.Default);
         }
 
         private void StopReceiver()
         {
-            if (this._msgReceiveTokenSource is null)
+            if (_msgReceiveTokenSource is null)
             {
                 return;
             }
             try
             {
-                using (this._msgReceiveTokenSource)
+                using (_msgReceiveTokenSource)
                 {
-                    this._msgReceiveTokenSource.Cancel();
+                    _msgReceiveTokenSource.Cancel();
                 }
 
                 _messagesChannel.Writer.TryComplete();
@@ -145,21 +145,21 @@ namespace ByteFlow.WebSockets
             }
             finally
             {
-                this._msgReceiveTokenSource = null;
+                _msgReceiveTokenSource = null;
             }
         }
 
         private void StopConsumer()
         {
-            if (this._msgConsumeTokenSource is null)
+            if (_msgConsumeTokenSource is null)
             {
                 return;
             }
             try
             {
-                using (this._msgConsumeTokenSource)
+                using (_msgConsumeTokenSource)
                 {
-                    this._msgConsumeTokenSource.Cancel();
+                    _msgConsumeTokenSource.Cancel();
                 }
             }
             catch (Exception e)
@@ -168,7 +168,7 @@ namespace ByteFlow.WebSockets
             }
             finally
             {
-                this._msgConsumeTokenSource = null;
+                _msgConsumeTokenSource = null;
             }
         }
 
@@ -184,11 +184,11 @@ namespace ByteFlow.WebSockets
                     var recv = await socket.ReceiveAsync(buffer, token);
                     if (recv.MessageType == WebSocketMessageType.Close)
                     {
-                        if (this.ClosedByRemoteAsyncAction is null) return null;
+                        if (ClosedByRemoteAsyncAction is null) return null;
                         
                         var closeStatus = recv.CloseStatus ?? WebSocketCloseStatus.Empty;
                         var closeDesc = recv.CloseStatusDescription ?? "close by remote";
-                        await this.ClosedByRemoteAsyncAction(new ConnectionClosedEventArgs(closeStatus, closeDesc, true));
+                        await ClosedByRemoteAsyncAction(new ConnectionClosedEventArgs(closeStatus, closeDesc, true));
                         return null;
                     }
 
@@ -210,7 +210,7 @@ namespace ByteFlow.WebSockets
 
             return msgType switch
             {
-                WebSocketMessageType.Text => new ConnectionMessage(ConnectionMessageType.Text, this.TextEncoding.GetString(msgStream.ToArray())),
+                WebSocketMessageType.Text => new ConnectionMessage(ConnectionMessageType.Text, TextEncoding.GetString(msgStream.ToArray())),
                 WebSocketMessageType.Binary => new ConnectionMessage(ConnectionMessageType.Binary, string.Empty, msgStream.ToArray()),
                 _ => null,
             };

@@ -28,11 +28,11 @@ namespace ByteFlow.Asyncs
         {
             _startTime = DateTimeOffset.Now;
             _interval = interval ?? TimeSpan.FromSeconds(1);
-            if (this._interval.TotalMilliseconds < 10)
+            if (_interval.TotalMilliseconds < 10)
             {
                 throw new NotSupportedException("此Timer不支持小于10ms的Tick周期");
             }
-            this.RunInternal();
+            RunInternal();
         }
 
         /// <summary>
@@ -46,7 +46,7 @@ namespace ByteFlow.Asyncs
 
         private void RunInternal()
         {
-            this.Stop();
+            Stop();
             
             TokenSourceHelper.Create(ref _tokenSource, out var token);
 
@@ -57,7 +57,7 @@ namespace ByteFlow.Asyncs
                 {
                     try
                     {
-                        await Task.Delay(this._interval, token);
+                        await Task.Delay(_interval, token);
                         if (token.IsCancellationRequested)
                         {
                             break;
@@ -70,7 +70,7 @@ namespace ByteFlow.Asyncs
                         }
                         else
                         {
-                            this.Tick?.Invoke(duration);
+                            Tick?.Invoke(duration);
                         }
                     }
                     catch (Exception e)
