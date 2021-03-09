@@ -9,10 +9,9 @@
         <PackageProjectUrl>https://github.com/heyheyhh/ByteFlow</PackageProjectUrl>
         <RepositoryUrl>https://github.com/heyheyhh/ByteFlow</RepositoryUrl>
         <RepositoryType>Github</RepositoryType>
-        <Version>1.0.4</Version>
+        <Version>1.1.0</Version>
         <PackageReleaseNotes>
-            1. ConnectionUtils：增加 UrlsConnectiveTestAsync,原来的 UrlsConnectiveTest 后续不再使用
-            2. Connection：增加IgnoreUrlsConnectiveTest属性，ConnectAsync 方法不再提供 ignoreUrlTest 参数
+            无
         </PackageReleaseNotes>
         <Description>对.net core 底层WebSocket的封装。具体使用方法，请移步Github源代码查看</Description>
     </PropertyGroup>

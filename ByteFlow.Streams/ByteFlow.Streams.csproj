@@ -8,8 +8,7 @@
         <PackageLicenseFile>LICENSE</PackageLicenseFile>
         <RepositoryUrl>https://github.com/heyheyhh/ByteFlow</RepositoryUrl>
         <RepositoryType>Github</RepositoryType>
-        <PackageReleaseNotes>统一版本号</PackageReleaseNotes>
-        <Version>1.0.4</Version>
+        <Version>1.1.0</Version>
         <PackageReleaseNotes>
             无
         </PackageReleaseNotes>
