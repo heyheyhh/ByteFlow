@@ -1,8 +1,8 @@
-﻿using System;
+﻿using ByteFlow.Protocol;
+using ByteFlow.Serializers;
+using System;
 using System.Collections.Generic;
 using System.Text;
-using ByteFlow.Protocol;
-using ByteFlow.Serializers;
 
 namespace ByteFlowTest
 {
@@ -17,8 +17,7 @@ namespace ByteFlowTest
             };
             var simpleBytes = ByteProto.Packet(simple);
             var desSimple = ByteProto.Unpacket(simpleBytes);
-            
-            
+
             var entity = new Entity()
             {
                 Index = 1,
@@ -29,12 +28,8 @@ namespace ByteFlowTest
                     Type = 2,
                     Balance = 2021.84,
                     Currency = "CNY",
-                    Sub = new SubEntity2()
-                    {
-                        Name = "",
-                    },
                 },
-                List = new List<string>() { "test list item" },
+                List = new List<Guid?>() { Guid.NewGuid(), null, Guid.NewGuid() },
                 Arr = new string[] { "Test arr item" },
                 Subs = new List<SubEntity>()
                 {
@@ -43,12 +38,7 @@ namespace ByteFlowTest
                         Type = 3,
                         Balance = 2022.84,
                         Currency = "USD",
-                        Sub = new SubEntity2()
-                        {
-                            Name = "SUB_SUB1",
-                        },
                     },
-
                     new SubEntity()
                     {
                         Type = 4,

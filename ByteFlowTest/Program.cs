@@ -1,14 +1,10 @@
-﻿using ByteFlow.Asyncs;
-using ByteFlow.Connection;
-using ByteFlow.Extensions;
+﻿using ByteFlow.Connection;
 using ByteFlow.Protocol;
-using ByteFlow.WebSockets;
 using ByteFlow.WebSockets.Events;
 using ByteFlowTestEntities;
 using System;
 using System.Diagnostics;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -18,11 +14,11 @@ namespace ByteFlowTest
     public class SimpleEntity
     {
         [ByteProtoMember(1)]
-        public int Id { get; set; }
+        public int? Id { get; set; }
         
         [ByteProtoMember(2)]
-        public string Desc { get; set; } = string.Empty;
-        
+        public string? Desc { get; set; } = null;
+
         [ByteProtoMember(3)]
         public DateTimeOffset Time { get; set; }
     }
@@ -34,29 +30,29 @@ namespace ByteFlowTest
         private static async Task Main(string[] _)
         {
             ByteProto.RegisterTypes(typeof(Entity).Assembly, typeof(SimpleEntity).Assembly);
-            // PackTest.Test();
-            
-            _client = ConnectionFactory.CreateClient<ByteProtoConnection>("TEST_CLIENT", options => {
-                options.AddSubProtocol("byte_proto");
-                options.SetRequestHeader("Authorization", "sid 7903702207692800");
-            });
-            _client.IgnoreUrlsConnectiveTest = true;
-            _client.Opened += Client_Ready;
-            _client.PacketReceived += Client_PacketReceived;
-            _client.Closed += OnClientClosed;
-            _client.Error += OnClientError;
-            
-            await _client.ConnectAsync(new string[] { "ws://127.0.0.1:5050" }, CancellationToken.None);
+            PackTest.Test();
 
-            await Task.Delay(5000);
-            while (_client.IsStillAlive)
-            {
-                Console.WriteLine($"Is Client Alive: {_client.IsStillAlive}");
-                await Task.Delay(10000);
-            }
+            //_client = ConnectionFactory.CreateClient<ByteProtoConnection>("TEST_CLIENT", options => {
+            //    options.AddSubProtocol("byte_proto");
+            //    options.SetRequestHeader("Authorization", "sid 7903702207692800");
+            //});
+            //_client.IgnoreUrlsConnectiveTest = true;
+            //_client.Opened += Client_Ready;
+            //_client.PacketReceived += Client_PacketReceived;
+            //_client.Closed += OnClientClosed;
+            //_client.Error += OnClientError;
+
+            //await _client.ConnectAsync(new string[] { "ws://127.0.0.1:5050" }, CancellationToken.None);
+
+            //await Task.Delay(5000);
+            //while (_client.IsStillAlive)
+            //{
+            //    Console.WriteLine($"Is Client Alive: {_client.IsStillAlive}");
+            //    await Task.Delay(10000);
+            //}
         }
 
-        private static async Task OnClientError(object? sender, ConnectionErrorEventArgs args)
+        private static async Task OnClientError(object? sender, ConnectionErrorEventArgs args, CancellationToken cancellationToken)
         {
             if (_client != null)
             {
@@ -65,7 +61,7 @@ namespace ByteFlowTest
             Console.WriteLine($"Error: {args.Message}");
         }
 
-        private static async Task OnClientClosed(object? sender, ConnectionClosedEventArgs args)
+        private static async Task OnClientClosed(object? sender, ConnectionClosedEventArgs args, CancellationToken cancellationToken)
         {
             if (_client != null)
             {
@@ -74,7 +70,7 @@ namespace ByteFlowTest
             Console.WriteLine($"Closed: {args.Description}");
         }
 
-        private static Task Client_PacketReceived(object? sender, PacketReceivedEventArgs args)
+        private static Task Client_PacketReceived(object? sender, PacketReceivedEventArgs args, CancellationToken cancellationToken)
         {
             //var con = sender as ByteProtoConnection;
             if (args.Packet is ByteProtoLoginResponse response)
@@ -85,7 +81,7 @@ namespace ByteFlowTest
             return Task.CompletedTask;
         }
 
-        private static Task Client_Ready(object? sender)
+        private static Task Client_Ready(object? sender, CancellationToken cancellationToken)
         {
             if (_client == null)
             {

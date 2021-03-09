@@ -57,7 +57,7 @@ namespace ByteFlow.Streams
         }
 
 
-        public void WriteBool(bool val) => this.WriteByte(val ? 1 : 0);
+        public void WriteBool(bool val) => this.WriteByte(val ? (byte)1 : (byte)0);
 
         public void WriteByte(byte val) => this.WriteBytes(new[] { val }, 0, 1);
 

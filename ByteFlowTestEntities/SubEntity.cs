@@ -12,9 +12,9 @@ namespace ByteFlowTest
         public double Balance { get; set; }
 
         [ByteProtoMember(3)]
-        public string Currency { get; set; } = "CNY";
+        public string? Currency { get; set; }
 
         [ByteProtoMember(4)]
-        public SubEntity2 Sub { get; set; } = new();
+        public SubEntity2? Sub { get; set; }
     }
 }

@@ -17,16 +17,16 @@ namespace ByteFlowTest
         public string Name { get; set; } = string.Empty;
 
         [ByteProtoMember(4)]
-        public SubEntity SubEntity { get; set; } = new SubEntity();
+        public SubEntity? SubEntity { get; set; } =null;
 
         [ByteProtoMember(5)]
-        public List<string> List { get; set; } = new List<string>();
+        public List<Guid?> List { get; set; } = new();
 
         [ByteProtoMember(6)]
         public string[] Arr { get; set; } = Array.Empty<string>();
 
         [ByteProtoMember(7)]
-        public List<SubEntity> Subs { get; set; } = new List<SubEntity>();
+        public List<SubEntity>? Subs { get; set; }
 
         [ByteProtoMember(8)]
         public List<byte> SubIds { get; set; } = new();

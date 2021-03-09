@@ -116,8 +116,20 @@ namespace ByteFlow.Protocol
             return obj;
         }
 
-        private static object ReadTypeValue(IBytesReader reader, Type targetType, Encoding textEncoding)
+        private static object? ReadTypeValue(IBytesReader reader, Type targetType, Encoding textEncoding)
         {
+            var valueBit = reader.ReadByte();
+            if (valueBit == 0)
+            {
+                // null
+                return null;
+            }
+
+            if (targetType.IsConstructedGenericType && targetType.GenericTypeArguments.Length > 0 && !string.IsNullOrWhiteSpace(targetType.FullName) && targetType.FullName.StartsWith("System.Nullable"))
+            {
+                targetType = targetType.GenericTypeArguments[0];
+            }
+
             if (targetType == ByteProto.ByteType)
             {
                 return reader.ReadByte();
@@ -244,9 +256,17 @@ namespace ByteFlow.Protocol
         {
             if (value == null)
             {
-                throw new Exception("Value cannot be null");
+                //throw new Exception("Value cannot be null");
+                writer.WriteByte(0); // null
+                return;
             }
 
+            if (pType.IsConstructedGenericType && pType.GenericTypeArguments.Length > 0 && !string.IsNullOrWhiteSpace(pType.FullName) && pType.FullName.StartsWith("System.Nullable"))
+            {
+                pType = pType.GenericTypeArguments[0];
+            }
+
+            writer.WriteByte(1);
             if (pType == ByteProto.ByteType)
             {
                 writer.WriteByte((byte)value);
